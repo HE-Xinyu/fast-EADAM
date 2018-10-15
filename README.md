@@ -3,6 +3,12 @@ A solver for college admission problem with consent based on paper 'Legal Assign
 
 Warning: It is still in construction. The correctness and efficiency are not guaranteed.
 
+## Current Progress
+Build the basic data structure; Implement Gale-Shapley Algorithm in O(E) time and space complexity. 
+
+## TODO
+Add some comments; Implement fast EADAM.
+
 ## License
 [MIT](https://opensource.org/licenses/MIT)
 
