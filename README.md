@@ -9,7 +9,7 @@ The input file should contain the information below:
 
 1. num_of_students (n), num_of_schools (m);
 2. m numbers of seats of schools;
-3. n numbers of students consenting or not (1: yes; 2: no);
+3. n numbers of students consenting or not (1: yes; 0: no);
 4. a n * m matrix representing preference of students;
 5. a m * n matrix representing preference of schools.
 
