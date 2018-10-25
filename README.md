@@ -15,11 +15,14 @@ The input file should contain the information below:
 
 ## Current Progress
 Build the basic data structure;
+
 Implement Gale-Shapley Algorithm in O(E) time and space complexity;
+
 Implememt fast EADAM algorithm in a all-consenting special case in O(E) time and space complexity. 
 
 ## TODO
 Add more comments;
+
 Implement the full fast EADAM.
 
 ## License
