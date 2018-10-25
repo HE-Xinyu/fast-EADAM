@@ -1,7 +1,7 @@
 # fast-EADAM
 A solver for college admission problem with consent based on paper 'Legal Assignments and fast EADAM with consent via classical theory of stable matchings'.
 
-Warning: It is still in construction. The correctness and efficiency are not guaranteed.
+Warning: It is almost finished, but the correctness and efficiency are not guaranteed.
 
 ## How to use
 Please check the test folder for examples of input and output.
@@ -18,12 +18,14 @@ Build the basic data structure;
 
 Implement Gale-Shapley Algorithm in O(E) time and space complexity;
 
-Implememt fast EADAM algorithm in a all-consenting special case in O(E) time and space complexity. 
+Implememt fast EADAM algorithm in O(E) time and space complexity. 
+
+The fast EADAM can deal with situations when the number of students does not equal to the number of seats.
 
 ## TODO
-Add more comments;
+Add more comments in the fast EADAM code;
 
-Implement the full fast EADAM.
+Fully test the fast EADAM.
 
 ## License
 [MIT](https://opensource.org/licenses/MIT)
