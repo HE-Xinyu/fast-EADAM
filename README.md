@@ -27,6 +27,11 @@ Add more comments in the fast EADAM code;
 
 Fully test the fast EADAM.
 
+## Hint
+It is highly likely that the queue can be implemented in arrays to speed up the algorithm even more.
+
+But the time and space complexity remain unchanged.
+
 ## License
 [MIT](https://opensource.org/licenses/MIT)
 
