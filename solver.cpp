@@ -73,8 +73,11 @@ Solution Solver::fast_EADAM() {
 	int cur_school = 0;
 
 	for (int i = 0; i < M.n_school; i++) {
-		if (S.school_worst[i] == -1)
+		if (S.school_worst[i] == -1) {
+			checked[i] = 1;
 			head[i] = M.n_stud;
+			n_school_checked++;
+		}
 		else 
 			head[i] = M.school_pos[i][S.school_worst[i]] + 1;
 	}
@@ -98,7 +101,10 @@ Solution Solver::fast_EADAM() {
 				Q.pop_back();
 				visited_stud[tmp_stud] = 0;
 				int tmp_school = Q.back();
-				head[tmp_school]++;
+				if (!M.is_consent[tmp_stud])
+					head[tmp_school] = M.n_stud;
+				else
+					head[tmp_school]++;
 				cur_school = tmp_school;
 			}
 			else {
@@ -115,6 +121,10 @@ Solution Solver::fast_EADAM() {
 		for (int i = head[cur_school]; i < M.n_stud; i++) {
 			int cur_stud = M.school_pref[cur_school][i];
 			int sol_school = S.stud_sol[cur_stud];
+			if (sol_school == -1) {
+				head[cur_school]++;
+				continue;
+			}
 			if (M.stud_pos[cur_stud][cur_school] < M.stud_pos[cur_stud][sol_school]) {
 				if (visited_stud[cur_stud]) {
 					Q.push_back(cur_stud);
