@@ -28,6 +28,10 @@ void Model::init(std::string filename) {
 	for (int i = 0; i < n_stud; i++)
 		stud_pref[i] = new int[n_school];
 
+	stud_pos = new int*[n_stud];
+	for (int i = 0; i < n_stud; i++)
+		stud_pos[i] = new int[n_school];
+
 	school_pref = new int*[n_school];
 	for (int i = 0; i < n_stud; i++)
 		school_pref[i] = new int[n_stud];
@@ -52,6 +56,8 @@ void Model::init(std::string filename) {
 		for (int j = 0; j < n_school; j++) {
 			fin >> stud_pref[i][j];
 			stud_pref[i][j]--;
+			// stud_pos means how much a school likes a student (the smaller, the higher priority.)
+			stud_pos[i][stud_pref[i][j]] = j;
 		}
 	}
 
@@ -59,6 +65,7 @@ void Model::init(std::string filename) {
 		for (int j = 0; j < n_stud; j++) {
 			fin >> school_pref[i][j];			
 			school_pref[i][j]--;
+			// school_pos means how much a school likes a student (the smaller, the higher priority.)
 			school_pos[i][school_pref[i][j]] = j;
 		}
 	}

@@ -46,12 +46,21 @@ void Solution::add(int stud, int school, bool is_worst) {
 	if (is_worst) school_worst[school] = stud;
 }
 
-void Solution::change(int good, int bad, int school, int new_worst) {
+void Solution::change_school(int good, int bad, int school, int new_worst) {
 	stud_sol[good] = school;
 	sol_matrix[good][school] = 1;
 	stud_sol[bad] = -1;
 	sol_matrix[bad][school] = 0;
 	school_worst[school] = new_worst;
+}
+
+void Solution::change_stud(int stud, int new_school) {
+	// school_worst is not maintained anymore.
+	if (stud_sol[stud] == -1) throw;
+	int old_school = stud_sol[stud];
+	sol_matrix[stud][old_school] = 0;
+	sol_matrix[stud][new_school] = 1;
+	stud_sol[stud] = new_school;
 }
 
 void Solution::drop(int a) {

@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 	Solver S;
 	S.init(M);
 
-	Solution Sol = S.Gale_Shapley();
+	Solution Sol = S.fast_EADAM();
 	
 	Sol.output(filename_out);
 

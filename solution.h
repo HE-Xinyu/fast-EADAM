@@ -19,6 +19,7 @@ public:
 	bool is_good();
 	void add(int stud, int school, bool is_worst);
 	void drop(int stud);
-	void change(int good, int bad, int school, int new_worst);
+	void change_school(int good, int bad, int school, int new_worst);
+	void change_stud(int stud, int new_school);
 	void output(std::string filename);
 };

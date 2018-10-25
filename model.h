@@ -10,6 +10,7 @@ public:
 	int n_seat;
 
 	int ** stud_pref;
+	int ** stud_pos;
 	int ** school_pref;
 	int ** school_pos;
 	int * is_consent;
