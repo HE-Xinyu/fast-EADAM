@@ -20,11 +20,11 @@ Implement Gale-Shapley Algorithm in O(E) time and space complexity;
 
 Implememt fast EADAM algorithm in O(E) time and space complexity. 
 
+Add comments in the code.
+
 The fast EADAM can deal with situations when the number of students does not equal to the number of seats.
 
 ## TODO
-Add more comments in the fast EADAM code;
-
 Fully test the fast EADAM.
 
 ## Hint
