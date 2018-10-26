@@ -14,6 +14,14 @@ void Solver::init(Model M) {
 }
 
 Solution Solver::Gale_Shapley() {
+	/***************************************
+	Student-optimal Gale Shapley Algorithm
+
+	Usage: first call Solver::init(M), then simply call this function.
+
+	Return: a solution object which contains all the information.
+	****************************************/
+
 	Solution S;
 	S.init(M.n_stud, M.n_school, M.n_seat);
 
@@ -56,14 +64,25 @@ Solution Solver::Gale_Shapley() {
 }
 
 Solution Solver::fast_EADAM() {
+	/************************************
+	Student-optimal fast EADAM algorithm.
+
+	Usage: first initialize the model by calling Solver::init(M),
+	then call this function.
+
+	Return: a solution object which contains all the information.
+	************************************/
+
 	Solution S = Gale_Shapley();
 
 	std::deque <int> Q;
 
-	int* checked = new int[M.n_school];
-	int* visited_school = new int[M.n_school];
-	int* visited_stud = new int[M.n_stud];
-	int* head = new int[M.n_school];
+	int* checked = new int[M.n_school];  // The school is checked iff head[school] == n_stud.
+	int* visited_school = new int[M.n_school];  // 1 if the school is in queue.
+	int* visited_stud = new int[M.n_stud];  // 1 if the student is in queue.
+	int* head = new int[M.n_school];  // The head position for the main loop.
+
+	// Initializations.
 	memset(checked, 0, sizeof(int) * M.n_school);
 	memset(head, 0, sizeof(int) * M.n_school);
 	memset(visited_school, 0, sizeof(int) * M.n_school);
@@ -74,6 +93,8 @@ Solution Solver::fast_EADAM() {
 
 	for (int i = 0; i < M.n_school; i++) {
 		if (S.school_worst[i] == -1) {
+			// There're no students choosing the school in GS.
+			// Then the school should be useless.
 			checked[i] = 1;
 			head[i] = M.n_stud;
 			n_school_checked++;
@@ -82,9 +103,14 @@ Solution Solver::fast_EADAM() {
 			head[i] = M.school_pos[i][S.school_worst[i]] + 1;
 	}
 	
-
+	// Here is the main algorithm.
+	// Warning: After fast EADAM, the school_worst may not be correct. 
 	while (n_school_checked != M.n_school) {
+		// Hint: the queue in the loop MUST have odd number of elements;
+		// the queue should look like: (school, student, school, student, ..., school).
 		if (Q.empty()) {
+			// Choose the first unchecked school.
+			// Notice that the permutation of schools will not affect the result.
 			for (int i = 0; i < M.n_school && (!checked[i]); i++) {
 				Q.push_back(i);
 				cur_school = i;
@@ -94,6 +120,7 @@ Solution Solver::fast_EADAM() {
 		}
 
 		if (checked[cur_school]) {
+			// The current school is useless. Pop it.
 			Q.pop_back();
 			visited_school[cur_school] = 0;
 			if (Q.size() >= 2) {
@@ -102,12 +129,14 @@ Solution Solver::fast_EADAM() {
 				visited_stud[tmp_stud] = 0;
 				int tmp_school = Q.back();
 				if (!M.is_consent[tmp_stud])
+					// The student is not consenting, thus the school is blocked by the student.
 					head[tmp_school] = M.n_stud;
 				else
 					head[tmp_school]++;
 				cur_school = tmp_school;
 			}
 			else {
+				// Find the next unchecked school.
 				while (checked[cur_school])
 					cur_school = (cur_school + 1) % M.n_school;
 
@@ -129,6 +158,8 @@ Solution Solver::fast_EADAM() {
 				if (visited_stud[cur_stud]) {
 					Q.push_back(cur_stud);
 					while (true) {
+						// Keep poping the queue twice at a time, until
+						// the current student is poped.
 						int tmp_stud = Q.back();
 						visited_stud[tmp_stud] = 0;
 						Q.pop_back();
@@ -147,6 +178,9 @@ Solution Solver::fast_EADAM() {
 				else if (visited_school[sol_school]) {
 					Q.push_back(cur_stud);
 					while (true) {
+						// Keep poping the queue twice at a time, until
+						// the current school is poped.
+						// Notice: the sequence of lines in the loop is important.
 						int tmp_stud = Q.back();
 						visited_stud[tmp_stud] = 0;
 						Q.pop_back();
@@ -162,6 +196,8 @@ Solution Solver::fast_EADAM() {
 					}
 				}
 				else {
+					// Push the student and school into the queue.
+					// Set current student with sol_school.
 					Q.push_back(cur_stud);
 					visited_stud[cur_stud] = 1;
 					Q.push_back(sol_school);
@@ -177,6 +213,7 @@ Solution Solver::fast_EADAM() {
 		}
 
 		if ((!flag) && head[cur_school] == M.n_stud) {
+			// We finally check the school :)
 			checked[cur_school] = 1;
 			n_school_checked++;
 		}
