@@ -75,4 +75,5 @@ void Solution::output(std::string filename) {
 		fout << "Student " << i + 1 << ": " << stud_sol[i] + 1 << std::endl;
 	}
 
+
 }

@@ -13,7 +13,7 @@ void Solver::init(Model M) {
 	this->M = M;
 }
 
-Solution Solver::Gale_Shapley() {
+Solution Solver::Gale_Shapley(bool info) {
 	/***************************************
 	Student-optimal Gale Shapley Algorithm
 
@@ -59,11 +59,12 @@ Solution Solver::Gale_Shapley() {
 			}
 		}
 	}
-
+	if (info)
+		std::cout << "Gale-Shapley Algorithm Complete!" << std::endl;
 	return S;
 }
 
-Solution Solver::fast_EADAM() {
+Solution Solver::fast_EADAM(bool info) {
 	/************************************
 	Student-optimal fast EADAM algorithm.
 
@@ -73,7 +74,7 @@ Solution Solver::fast_EADAM() {
 	Return: a solution object which contains all the information.
 	************************************/
 
-	Solution S = Gale_Shapley();
+	Solution S = Gale_Shapley(false);
 
 	std::deque <int> Q;
 
@@ -147,8 +148,8 @@ Solution Solver::fast_EADAM() {
 
 		bool flag = false;
 
-		for (int i = head[cur_school]; i < M.n_stud; i++) {
-			int cur_stud = M.school_pref[cur_school][i];
+		while (head[cur_school] < M.n_stud) {
+			int cur_stud = M.school_pref[cur_school][head[cur_school]];
 			int sol_school = S.stud_sol[cur_stud];
 			if (sol_school == -1) {
 				head[cur_school]++;
@@ -212,12 +213,14 @@ Solution Solver::fast_EADAM() {
 			}
 		}
 
-		if ((!flag) && head[cur_school] == M.n_stud) {
+		if (!flag) {
 			// We finally check the school :)
 			checked[cur_school] = 1;
 			n_school_checked++;
 		}
 	}
+	if (info)
+		std::cout << "EADAM Algorithm Complete!" << std::endl;
 	return S;
 }
 

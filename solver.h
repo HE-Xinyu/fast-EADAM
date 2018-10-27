@@ -10,7 +10,6 @@ public:
 	Solver();
 	void init(Model M);
 
-	Solution Gale_Shapley();
-	Solution fast_EADAM();
-
+	Solution Gale_Shapley(bool info=true);
+	Solution fast_EADAM(bool info=true);
 };
