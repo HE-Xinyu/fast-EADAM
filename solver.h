@@ -11,5 +11,6 @@ public:
 	void init(Model M);
 
 	Solution Gale_Shapley();
+	Solution fast_EADAM();
 
 };
