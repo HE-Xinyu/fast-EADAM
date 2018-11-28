@@ -4,11 +4,12 @@
 
 class Solver {
 private:
-	Model M;
+	Model* M_ptr;
 
 public:
-	Solver();
-	void init(Model M);
+	Solver(Model& M);
+	~Solver();
+	// void init(Model M);
 
 	Solution Gale_Shapley(bool info=true);
 	Solution fast_EADAM(bool info=true);

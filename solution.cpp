@@ -4,6 +4,9 @@
 #include <iostream>
 #include <fstream>
 
+using std::cout;
+using std::endl;
+
 Solution::Solution() {
 	this->n_stud = 0;
 	this->n_stud_satisfied = 0;
@@ -15,11 +18,41 @@ Solution::Solution() {
 	this->school_worst = 0;
 }
 
+Solution::Solution(const Solution& Sol) {
+	n_stud = Sol.n_stud;
+	n_stud_satisfied = Sol.n_stud_satisfied;
+	n_school = Sol.n_school;
+	n_seat = Sol.n_seat;
+	school_cnt = new int[n_school];
+	memcpy(school_cnt, Sol.school_cnt, sizeof(int) * n_school);
+	stud_sol = new int[n_stud];
+	memcpy(stud_sol, Sol.stud_sol, sizeof(int) * n_stud);
+	// cout << "Assign new RAM address: " << stud_sol << " from copying " << Sol.stud_sol << endl;
+	sol_matrix = new int*[n_stud];
+	for (int i = 0; i < n_stud; i++) {
+		sol_matrix[i] = new int[n_school];
+		memcpy(sol_matrix[i], Sol.sol_matrix[i], sizeof(int) * n_school);
+	}
+	school_worst = new int[n_school];
+	memcpy(school_worst, Sol.school_worst, sizeof(int) * n_school);
+}
+
+Solution::~Solution() {
+	// cout << "Deleting" << stud_sol << endl;
+	delete[] stud_sol;
+	delete[] school_cnt;
+	for (int i = 0; i < n_stud; i++)
+		delete[] sol_matrix[i];
+	delete[] sol_matrix;
+	delete[] school_worst;
+}
+
 void Solution::init(int n_stud, int n_school, int n_seat) {
 	this->n_stud = n_stud;
 	this->n_school = n_school;
 	this->n_seat = n_seat;
 	n_stud_satisfied = 0;
+	// std::cout << n_stud << std::endl;
 	stud_sol = new int[n_stud];
 	std::memset(stud_sol, -1, sizeof(int) * n_stud);
 	school_cnt = new int[n_school];
@@ -34,7 +67,7 @@ void Solution::init(int n_stud, int n_school, int n_seat) {
 	std::memset(school_worst, -1, sizeof(int) * n_school);
 }
 
-bool Solution::is_good() {
+bool Solution::is_good() const {
 	return (n_stud == n_stud_satisfied || n_seat == n_stud_satisfied);
 }
 
@@ -67,13 +100,21 @@ void Solution::drop(int a) {
 	// TODO
 }
 
-void Solution::output(std::string filename) {
-	std::ofstream fout;
-	fout.open(filename);
+//void Solution::output(std::string filename) {
+//	// Caution: 
+//	// In the model, -1 means that the school / student is not allocated.
+//	// But in the output, 0 means the same stuff.
+//
+//	std::ofstream fout;
+//	fout.open(filename);
+//
+//	for (int i = 0; i < n_stud; i++) {
+//		fout << "Student " << i + 1 << ": " << stud_sol[i] + 1 << std::endl;
+//	}
+//}
 
-	for (int i = 0; i < n_stud; i++) {
-		fout << "Student " << i + 1 << ": " << stud_sol[i] + 1 << std::endl;
-	}
-
-
+std::ostream& operator<< (std::ostream& os, const Solution Sol) {
+	for (int i = 0; i < Sol.n_stud; i++)
+		os << "Student " << i + 1 << ": " << Sol.stud_sol[i] + 1 << std::endl;
+	return os;
 }

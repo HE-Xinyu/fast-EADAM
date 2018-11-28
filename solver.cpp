@@ -5,12 +5,14 @@
 #include "solution.h"
 #include "model.h"
 
-Solver::Solver() {
-	
+
+using std::cout;
+using std::endl;
+Solver::Solver(Model& M) {
+	M_ptr = &M;
 }
 
-void Solver::init(Model M) {
-	this->M = M;
+Solver::~Solver() {
 }
 
 Solution Solver::Gale_Shapley(bool info) {
@@ -23,21 +25,20 @@ Solution Solver::Gale_Shapley(bool info) {
 	****************************************/
 
 	Solution S;
-	S.init(M.n_stud, M.n_school, M.n_seat);
-
-	int* head_stud = new int[M.n_stud];
-	memset(head_stud, 0, sizeof(int) * M.n_stud);
+	S.init(M_ptr->n_stud, M_ptr->n_school, M_ptr->n_seat);
+	int* head_stud = new int[M_ptr->n_stud];
+	memset(head_stud, 0, sizeof(int) * M_ptr->n_stud);
 	while (!S.is_good()) {
-		for (int i = 0; i < M.n_stud; i++) {
+		for (int i = 0; i < M_ptr->n_stud; i++) {
 			if (S.stud_sol[i] == -1) {  // The student is not allocated to any school.
-				while (head_stud[i] != M.n_school) {
+				while (head_stud[i] != M_ptr->n_school) {
 					bool exit = false;  // If he finds a school, exit the loop.
-					int cur_school = M.stud_pref[i][head_stud[i]];
+					int cur_school = M_ptr->stud_pref[i][head_stud[i]];
 					// Decide if he is the worst student of the school.
 					bool flag = S.school_worst[cur_school] == -1 || 
-						M.school_pos[cur_school][i] > M.school_pos[cur_school][S.school_worst[cur_school]];
+						M_ptr->school_pos[cur_school][i] > M_ptr->school_pos[cur_school][S.school_worst[cur_school]];
 
-					if (S.school_cnt[cur_school] < M.seat[cur_school]) {
+					if (S.school_cnt[cur_school] < M_ptr->seat[cur_school]) {
 						// The school still has remaining seats.
 						S.add(i, cur_school, flag);
 						exit = true;
@@ -45,12 +46,12 @@ Solution Solver::Gale_Shapley(bool info) {
 					else if (!flag) {
 						int dropped_stud = S.school_worst[cur_school];
 						int j;
-						for (j = M.school_pos[cur_school][dropped_stud] - 1; j >= 0; j--)
+						for (j = M_ptr->school_pos[cur_school][dropped_stud] - 1; j >= 0; j--)
 							// Find the worst student excluding the dropped student.
-							if (S.sol_matrix[M.school_pref[cur_school][j]][cur_school] || 
-								(M.school_pref[cur_school][j] == i))
+							if (S.sol_matrix[M_ptr->school_pref[cur_school][j]][cur_school] || 
+								(M_ptr->school_pref[cur_school][j] == i))
 								break;
-						S.change_school(i, dropped_stud, cur_school, M.school_pref[cur_school][j]);
+						S.change_school(i, dropped_stud, cur_school, M_ptr->school_pref[cur_school][j]);
 						exit = true;
 					}
 					head_stud[i]++;
@@ -78,41 +79,41 @@ Solution Solver::fast_EADAM(bool info) {
 
 	std::deque <int> Q;
 
-	int* checked = new int[M.n_school];  // The school is checked iff head[school] == n_stud.
-	int* visited_school = new int[M.n_school];  // 1 if the school is in queue.
-	int* visited_stud = new int[M.n_stud];  // 1 if the student is in queue.
-	int* head = new int[M.n_school];  // The head position for the main loop.
+	int* checked = new int[M_ptr->n_school];  // The school is checked iff head[school] == n_stud.
+	int* visited_school = new int[M_ptr->n_school];  // 1 if the school is in queue.
+	int* visited_stud = new int[M_ptr->n_stud];  // 1 if the student is in queue.
+	int* head = new int[M_ptr->n_school];  // The head position for the main loop.
 
 	// Initializations.
-	memset(checked, 0, sizeof(int) * M.n_school);
-	memset(head, 0, sizeof(int) * M.n_school);
-	memset(visited_school, 0, sizeof(int) * M.n_school);
-	memset(visited_stud, 0, sizeof(int) * M.n_stud);
+	memset(checked, 0, sizeof(int) * M_ptr->n_school);
+	memset(head, 0, sizeof(int) * M_ptr->n_school);
+	memset(visited_school, 0, sizeof(int) * M_ptr->n_school);
+	memset(visited_stud, 0, sizeof(int) * M_ptr->n_stud);
 
 	int n_school_checked = 0;
 	int cur_school = 0;
 
-	for (int i = 0; i < M.n_school; i++) {
+	for (int i = 0; i < M_ptr->n_school; i++) {
 		if (S.school_worst[i] == -1) {
 			// There're no students choosing the school in GS.
 			// Then the school should be useless.
 			checked[i] = 1;
-			head[i] = M.n_stud;
+			head[i] = M_ptr->n_stud;
 			n_school_checked++;
 		}
 		else 
-			head[i] = M.school_pos[i][S.school_worst[i]] + 1;
+			head[i] = M_ptr->school_pos[i][S.school_worst[i]] + 1;
 	}
 	
 	// Here is the main algorithm.
 	// Warning: After fast EADAM, the school_worst may not be correct. 
-	while (n_school_checked != M.n_school) {
+	while (n_school_checked != M_ptr->n_school) {
 		// Hint: the queue in the loop MUST have odd number of elements;
 		// the queue should look like: (school, student, school, student, ..., school).
 		if (Q.empty()) {
 			// Choose the first unchecked school.
 			// Notice that the permutation of schools will not affect the result.
-			for (int i = 0; i < M.n_school && (!checked[i]); i++) {
+			for (int i = 0; i < M_ptr->n_school && (!checked[i]); i++) {
 				Q.push_back(i);
 				cur_school = i;
 				visited_school[i] = 1;
@@ -129,9 +130,9 @@ Solution Solver::fast_EADAM(bool info) {
 				Q.pop_back();
 				visited_stud[tmp_stud] = 0;
 				int tmp_school = Q.back();
-				if (!M.is_consent[tmp_stud])
+				if (!M_ptr->is_consent[tmp_stud])
 					// The student is not consenting, thus the school is blocked by the student.
-					head[tmp_school] = M.n_stud;
+					head[tmp_school] = M_ptr->n_stud;
 				else
 					head[tmp_school]++;
 				cur_school = tmp_school;
@@ -139,7 +140,7 @@ Solution Solver::fast_EADAM(bool info) {
 			else {
 				// Find the next unchecked school.
 				while (checked[cur_school])
-					cur_school = (cur_school + 1) % M.n_school;
+					cur_school = (cur_school + 1) % M_ptr->n_school;
 
 				Q.push_back(cur_school);
 				visited_school[cur_school] = 1;
@@ -148,14 +149,14 @@ Solution Solver::fast_EADAM(bool info) {
 
 		bool flag = false;
 
-		while (head[cur_school] < M.n_stud) {
-			int cur_stud = M.school_pref[cur_school][head[cur_school]];
+		while (head[cur_school] < M_ptr->n_stud) {
+			int cur_stud = M_ptr->school_pref[cur_school][head[cur_school]];
 			int sol_school = S.stud_sol[cur_stud];
 			if (sol_school == -1) {
 				head[cur_school]++;
 				continue;
 			}
-			if (M.stud_pos[cur_stud][cur_school] < M.stud_pos[cur_stud][sol_school]) {
+			if (M_ptr->stud_pos[cur_stud][cur_school] < M_ptr->stud_pos[cur_stud][sol_school]) {
 				if (visited_stud[cur_stud]) {
 					Q.push_back(cur_stud);
 					while (true) {
