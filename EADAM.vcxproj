@@ -146,12 +146,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="generator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="solution.cpp" />
     <ClCompile Include="solver.cpp" />
-    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />
@@ -169,11 +167,9 @@
     <None Include="test\5_EADAM.out" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generator.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="solution.h" />
     <ClInclude Include="solver.h" />
-    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

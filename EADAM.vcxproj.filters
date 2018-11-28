@@ -27,12 +27,6 @@
     <ClCompile Include="solver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="generator.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="utils.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />
@@ -57,12 +51,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="solver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="generator.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="utils.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
