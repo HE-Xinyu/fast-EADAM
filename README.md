@@ -7,7 +7,9 @@ Warning: It is almost finished, but the correctness and efficiency are not guara
 There are two modes available cuurently:
 
 1. Performance test mode. It tests how the algorithm performs in randomly generated large datasets. You will be prompted to enter parameters required. Although time complexity doesn't change, my implementation is hundreds times faster than the original one.
-2. Single problem solver. You will be prompted to enter input and output file paths.
+2. Single problem solver. You will be prompted to enter input and output file paths. The fully tested algorithms are Gale-Shapley algorithm, fast EADAM and vNM stable set.
+
+main.cpp contains several usage examples.
 
 Please check the test folder for examples of input and output.
 The input file should contain information in order below:
@@ -31,14 +33,15 @@ The fast EADAM can deal with situations when the number of students does not equ
 
 Build performance test module. 
 
-Add appropriate destructors to save memory cost.
+Add copy destructors to avoid memory overflow.
 
-Add copy destructors to avoid bugs.
+Use operator overloading to make the code clear.
 
-Use operator overloading to make the code more clear.
+Implement vNM stable set algorithm in O(E).
 
-## TODO
-Fully test the fast EADAM.
+Implement some help functions for comparing solution sets.
+
+Provide a script (result_to_xlsx.py) for transforming output into excel file.
 
 ## Hint
 It is highly likely that the queue can be implemented in arrays to speed up the algorithm even more.
