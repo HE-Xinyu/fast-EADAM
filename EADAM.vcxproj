@@ -146,6 +146,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="set_ops.cpp" />
+    <ClCompile Include="hash.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="solution.cpp" />
@@ -167,6 +169,8 @@
     <None Include="test\5_EADAM.out" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="set_ops.h" />
+    <ClInclude Include="hash.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="solution.h" />
     <ClInclude Include="solver.h" />

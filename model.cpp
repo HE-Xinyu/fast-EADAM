@@ -6,22 +6,17 @@
 #include <algorithm>
 #include <ctime>
 #include <cstring>
+#include <cmath>
 
 using std::default_random_engine;
 using std::uniform_real_distribution;
 using std::cout;
 using std::endl;
 
+default_random_engine e(time(0));
+uniform_real_distribution<double> u(0, 1);
+
 Model::Model() {
-	this->n_stud = 0;
-	this->n_school = 0;
-	this->is_consent = 0;
-	this->school_pos = 0;
-	this->school_pref = 0;
-	this->stud_pref = 0;
-	this->stud_pos = 0;
-	this->seat = 0;
-	this->n_seat = 0;
 }
 
 Model::Model(Model& M) {
@@ -50,8 +45,92 @@ Model::Model(Model& M) {
 	memcpy(seat, M.seat, sizeof(int) * n_school);
 }
 
+Model::Model(int n_stud, int n_school, int each_seats,
+	double corr_school, double corr_stud, double consenting_prob, bool check) {
+	
+	allocate(n_stud, n_school);
+	this->n_stud = n_stud;
+	this->n_school = n_school;
+	this->n_seat = each_seats * n_school;
+
+	for (int i = 0; i < n_stud; i++) {
+		is_consent[i] = u(e) < consenting_prob;
+	}
+
+	for (int i = 0; i < n_school; i++)
+		seat[i] = each_seats;
+
+	// The school preference is affected by the correlation argument.
+	double* public_pref = new double[n_stud];
+	for (int i = 0; i < n_stud; i++) public_pref[i] = u(e);
+
+	double* private_pref = new double[n_stud];
+	for (int i = 0; i < n_school; i++) {
+		for (int j = 0; j < n_stud; j++) {
+			private_pref[j] = u(e) * sqrt(1 - corr_school * corr_school) + public_pref[j] * corr_school;
+		}
+		std::iota(school_pref[i], school_pref[i] + n_stud, 0);
+		std::sort(school_pref[i], school_pref[i] + n_stud, [&](int i1, int i2) {return private_pref[i1] < private_pref[i2]; });
+		for (int j = 0; j < n_stud; j++)
+			school_pos[i][school_pref[i][j]] = j;
+	}
+
+	// The student preference is NOT affected by the correlation argument.
+	double* public_pref_stud = new double[n_school];
+	for (int i = 0; i < n_school; i++) public_pref_stud[i] = u(e);
+
+	double* pref_value_stud = new double[n_school];
+	for (int i = 0; i < n_stud; i++) {
+		for (int j = 0; j < n_school; j++)
+			pref_value_stud[j] = u(e) * sqrt(1 - corr_stud * corr_stud) + public_pref_stud[j] * corr_stud;
+		std::iota(stud_pref[i], stud_pref[i] + n_school, 0);
+		std::sort(stud_pref[i], stud_pref[i] + n_school, [&](int i1, int i2) {return pref_value_stud[i1] < pref_value_stud[i2]; });
+		for (int j = 0; j < n_school; j++)
+			stud_pos[i][stud_pref[i][j]] = j;
+	}
+}
+
+Model::Model(std::string filename) {
+	std::ifstream fin;
+	fin.open(filename);
+
+	if (fin.fail()) {
+		std::cerr << "I/O Error: The input file " << filename << " does not exist.";
+		throw;
+	}
+
+	fin >> n_stud >> n_school;
+
+	allocate(n_stud, n_school);
+
+	for (int i = 0; i < n_school; i++) {
+		fin >> seat[i];
+		n_seat += seat[i];
+	}
+
+	for (int i = 0; i < n_stud; i++)
+		fin >> is_consent[i];
+
+	for (int i = 0; i < n_stud; i++) {
+		for (int j = 0; j < n_school; j++) {
+			fin >> stud_pref[i][j];
+			stud_pref[i][j]--;
+			// stud_pos means how much a student likes a school (the smaller, the higher priority.)
+			stud_pos[i][stud_pref[i][j]] = j;
+		}
+	}
+
+	for (int i = 0; i < n_school; i++) {
+		for (int j = 0; j < n_stud; j++) {
+			fin >> school_pref[i][j];
+			school_pref[i][j]--;
+			// school_pos means how much a school likes a student (the smaller, the higher priority.)
+			school_pos[i][school_pref[i][j]] = j;
+		}
+	}
+}
+
 Model::~Model() {
-	// cout << "Deleting Model" << endl;
 	delete[] is_consent;
 	for (int i = 0; i < n_school; i++) {
 		delete[] school_pos[i];
@@ -87,90 +166,21 @@ void Model::allocate(int n_stud, int n_school) {
 
 	seat = new int[n_school];
 	is_consent = new int[n_stud];
-	// memset(is_consent, 0, sizeof(int) * n_stud);
 }
 
-void Model::init_from_file(const std::string filename) {
-	std::ifstream fin;
-	fin.open(filename);
-
-	if (fin.fail()) {
-		std::cerr << "I/O Error: The input file " << filename << " does not exist.";
-		throw;
+std::ostream& operator<< (std::ostream& os, const Model& M) {
+	os << "Student Preference: " << endl;
+	for (int i = 0; i < M.n_stud; i++) {
+		for (int j = 0; j < M.n_school; j++)
+			os << M.stud_pref[i][j] + 1 << " ";
+		os << endl;
 	}
-
-	fin >> n_stud >> n_school;
-
-	allocate(n_stud, n_school);
-
-	for (int i = 0; i < n_school; i++) {
-		fin >> seat[i];
-		n_seat += seat[i];
+	os << endl;
+	os << "School Preference: " << endl;
+	for (int i = 0; i < M.n_school; i++) {
+		for (int j = 0; j < M.n_stud; j++)
+			os << M.school_pref[i][j] + 1 << " ";
+		os << endl;
 	}
-		
-	for (int i = 0; i < n_stud; i++)
-		fin >> is_consent[i];
-
-	for (int i = 0; i < n_stud; i++) {
-		for (int j = 0; j < n_school; j++) {
-			fin >> stud_pref[i][j];
-			stud_pref[i][j]--;
-			// stud_pos means how much a school likes a student (the smaller, the higher priority.)
-			stud_pos[i][stud_pref[i][j]] = j;
-		}
-	}
-
-	for (int i = 0; i < n_school; i++) {
-		for (int j = 0; j < n_stud; j++) {
-			fin >> school_pref[i][j];			
-			school_pref[i][j]--;
-			// school_pos means how much a school likes a student (the smaller, the higher priority.)
-			school_pos[i][school_pref[i][j]] = j;
-		}
-	}
-}
-
-void Model::init_randomly(int n_stud, int n_school, int each_seats, 
-	double corr, double consenting_prob, bool check) {
-	allocate(n_stud, n_school);
-
-	this->n_stud = n_stud;
-	this->n_school = n_school;
-	this->n_seat = each_seats * n_school;
-	
-	default_random_engine e(time(0));
-	uniform_real_distribution<double> u(0, 1);
-
-	for (int i = 0; i < n_stud; i++) {
-		is_consent[i] = u(e) < consenting_prob;
-	}
-
-	for (int i = 0; i < n_school; i++)
-		seat[i] = each_seats;
-
-	// The school preference is affected by the correlation argument.
-	double* public_pref = new double[n_stud];
-	for (int i = 0; i < n_stud; i++) public_pref[i] = u(e);
-
-	double* private_pref = new double[n_stud];
-	for (int i = 0; i < n_school; i++) {
-		for (int j = 0; j < n_stud; j++) {
-			private_pref[j] = u(e) * (1 - corr) + public_pref[j] * corr;
-		}
-		std::iota(school_pref[i], school_pref[i] + n_stud, 0);
-		std::sort(school_pref[i], school_pref[i] + n_stud, [&](int i1, int i2) {return private_pref[i1] < private_pref[i2]; });
-		for (int j = 0; j < n_stud; j++)
-			school_pos[i][school_pref[i][j]] = j;
-	}
-
-	// The student preference is NOT affected by the correlation argument.
-	double* pref_value_stud = new double[n_school];
-	for (int i = 0; i < n_stud; i++) {
-		for (int j = 0; j < n_school; j++)
-			pref_value_stud[j] = u(e);
-		std::iota(stud_pref[i], stud_pref[i] + n_school, 0);
-		std::sort(stud_pref[i], stud_pref[i] + n_school, [&](int i1, int i2) {return pref_value_stud[i1] < pref_value_stud[i2]; });
-		for (int j = 0; j < n_school; j++)
-			stud_pos[i][stud_pref[i][j]] = j;
-	}
+	return os;
 }

@@ -3,9 +3,13 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <functional>
+#include <unordered_set>
 
 using std::cout;
 using std::endl;
+using std::unordered_set;
+using std::pair;
 
 Solution::Solution() {
 	this->n_stud = 0;
@@ -27,7 +31,6 @@ Solution::Solution(const Solution& Sol) {
 	memcpy(school_cnt, Sol.school_cnt, sizeof(int) * n_school);
 	stud_sol = new int[n_stud];
 	memcpy(stud_sol, Sol.stud_sol, sizeof(int) * n_stud);
-	// cout << "Assign new RAM address: " << stud_sol << " from copying " << Sol.stud_sol << endl;
 	sol_matrix = new int*[n_stud];
 	for (int i = 0; i < n_stud; i++) {
 		sol_matrix[i] = new int[n_school];
@@ -37,22 +40,11 @@ Solution::Solution(const Solution& Sol) {
 	memcpy(school_worst, Sol.school_worst, sizeof(int) * n_school);
 }
 
-Solution::~Solution() {
-	// cout << "Deleting" << stud_sol << endl;
-	delete[] stud_sol;
-	delete[] school_cnt;
-	for (int i = 0; i < n_stud; i++)
-		delete[] sol_matrix[i];
-	delete[] sol_matrix;
-	delete[] school_worst;
-}
-
-void Solution::init(int n_stud, int n_school, int n_seat) {
+Solution::Solution(int n_stud, int n_school, int n_seat) {
 	this->n_stud = n_stud;
 	this->n_school = n_school;
 	this->n_seat = n_seat;
 	n_stud_satisfied = 0;
-	// std::cout << n_stud << std::endl;
 	stud_sol = new int[n_stud];
 	std::memset(stud_sol, -1, sizeof(int) * n_stud);
 	school_cnt = new int[n_school];
@@ -65,6 +57,39 @@ void Solution::init(int n_stud, int n_school, int n_seat) {
 
 	this->school_worst = new int[n_school];
 	std::memset(school_worst, -1, sizeof(int) * n_school);
+}
+
+Solution::Solution(int n, int* stud_sol) {
+	this->n_stud = n;
+	this->n_school = n;
+	this->n_seat = n;
+	n_stud_satisfied = n;
+	this->stud_sol = new int[n];
+	memcpy(this->stud_sol, stud_sol, sizeof(int) * n);
+	school_cnt = new int[n];
+	for (int i = 0; i < n; i++)
+		school_cnt[i] = 1;
+	sol_matrix = new int*[n];
+	for (int i = 0; i < n; i++) {
+		sol_matrix[i] = new int[n];
+		memset(sol_matrix[i], 0, sizeof(int) * n);
+	}
+
+	this->school_worst = new int[n];
+	for (int i = 0; i < n; i++) {
+		school_worst[stud_sol[i]] = i;
+		sol_matrix[i][stud_sol[i]] = 1;
+	}
+}
+
+
+Solution::~Solution() {
+	delete[] stud_sol;
+	delete[] school_cnt;
+	for (int i = 0; i < n_stud; i++)
+		delete[] sol_matrix[i];
+	delete[] sol_matrix;
+	delete[] school_worst;
 }
 
 bool Solution::is_good() const {
@@ -100,20 +125,14 @@ void Solution::drop(int a) {
 	// TODO
 }
 
-//void Solution::output(std::string filename) {
-//	// Caution: 
-//	// In the model, -1 means that the school / student is not allocated.
-//	// But in the output, 0 means the same stuff.
-//
-//	std::ofstream fout;
-//	fout.open(filename);
-//
-//	for (int i = 0; i < n_stud; i++) {
-//		fout << "Student " << i + 1 << ": " << stud_sol[i] + 1 << std::endl;
-//	}
-//}
+bool Solution::operator==(const Solution& rhs) const {
+	if (this->n_stud != rhs.n_stud) return false;
+	for (int i = 0; i < this->n_stud; i++)
+		if (this->stud_sol[i] != rhs.stud_sol[i]) return false;
+	return true;
+}
 
-std::ostream& operator<< (std::ostream& os, const Solution Sol) {
+std::ostream& operator<< (std::ostream& os, const Solution& Sol) {
 	for (int i = 0; i < Sol.n_stud; i++)
 		os << "Student " << i + 1 << ": " << Sol.stud_sol[i] + 1 << std::endl;
 	return os;

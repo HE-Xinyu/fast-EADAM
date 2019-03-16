@@ -27,6 +27,12 @@
     <ClCompile Include="solver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="hash.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="set_ops.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />
@@ -51,6 +57,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="solver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hash.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="set_ops.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

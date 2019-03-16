@@ -18,9 +18,10 @@ public:
 	int * is_consent;
 	int * seat;
 	Model();
+	Model(int n_stud, int n_school, int each_seats,
+		double corr_school, double corr_stud, double consenting_prob, bool check = false);
+	explicit Model(const std::string filename);
 	Model(Model& M);
 	~Model();
-	void init_from_file(const std::string filename);
-	void init_randomly(int n_stud, int n_school, int each_seats,
-		double corr, double consenting_prob, bool check = false);
+	friend std::ostream& operator<< (std::ostream& os, const Model& M);
 };

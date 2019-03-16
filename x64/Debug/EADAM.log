@@ -1,0 +1,25 @@
+﻿生成启动时间为 2019/2/20 20:26:46。
+     1>项目“E:\Project\C++\EADAM\EADAM\EADAM.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         D:\Program Files\VC\bin\x86_amd64\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc140.pdb" /Gd /TP /errorReport:prompt set_ops.cpp hash.cpp main.cpp model.cpp solution.cpp solver.cpp
+         solver.cpp
+         solution.cpp
+         model.cpp
+     1>e:\project\c++\eadam\eadam\model.cpp(16): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+         main.cpp
+         hash.cpp
+         set_ops.cpp
+         正在生成代码...
+       Link:
+         D:\Program Files\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Project\C++\EADAM\x64\Debug\EADAM.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"E:\Project\C++\EADAM\x64\Debug\EADAM.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Project\C++\EADAM\x64\Debug\EADAM.lib" /MACHINE:X64 x64\Debug\set_ops.obj
+         x64\Debug\hash.obj
+         x64\Debug\main.obj
+         x64\Debug\model.obj
+         x64\Debug\solution.obj
+         x64\Debug\solver.obj
+         EADAM.vcxproj -> E:\Project\C++\EADAM\x64\Debug\EADAM.exe
+     1>已完成生成项目“E:\Project\C++\EADAM\EADAM\EADAM.vcxproj”(Build 个目标)的操作。
+
+已成功生成。
+
+已用时间 00:00:04.12
